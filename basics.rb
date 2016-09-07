@@ -5,7 +5,7 @@ require 'json'
 post '/payload' do
   push = JSON.parse(request.body.read)
   puts "I got some JSON: #{push.inspect}"
-  "addcollaborators -r brianamarie/travel-log -i 8"
+  exec 'addcollaborators -r brianamarie/travel-log -i 8'
 end
 
 get '/' do
