@@ -5,10 +5,10 @@ require 'json'
 jsontest = "none"
 
 post '/payload' do
-  load './addcollaborators -r githubteacher/all-the-hooks -i 1'
   push = JSON.parse(request.body.read)
   puts "I got some JSON: #{push.inspect}"
   jsontest = "I got some JSON: #{push.inspect}"
+  system('./addcollaborators -r githubteacher/all-the-hooks -i 1')
 end
 
 get '/' do
