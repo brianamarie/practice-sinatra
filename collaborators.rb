@@ -1,5 +1,4 @@
 require 'octokit'
-require 'optparse'
 
 Octokit.auto_paginate = true
 
