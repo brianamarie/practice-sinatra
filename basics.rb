@@ -1,7 +1,7 @@
 require 'rubygems'
 require 'sinatra'
 require 'json'
-require_relative 'collaborators'
+# require_relative 'collaborators'
 
 jsontest = "none"
 
