@@ -10,7 +10,7 @@ require 'octokit'
 require 'optparse'
 require_relative 'common'
 
-puts 'Testing 123 Amazing'
+jsontest = 'Testing 123 Amazing'
 
 access_token = ENV['GITHUBTEACHER_TOKEN'] or abort("You need a GitHub Teacher access token")
 repo_name, issue_num = nil, nil
