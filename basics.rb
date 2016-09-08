@@ -1,7 +1,6 @@
 require 'rubygems'
 require 'sinatra'
 require 'json'
-require_relative 'collaborators'
 
 jsontest = "none"
 
@@ -9,7 +8,7 @@ post '/payload' do
   push = JSON.parse(request.body.read)
   puts "I got some JSON: #{push.inspect}"
   jsontest = "I got some JSON: #{push.inspect}"
-  Collaborator.add repo_name: "githubteacher/all-the-hooks" issue_num: 1
+  load 'ruby ./addcollaborators -r githubteacher/all-the-hooks -i 1'
 end
 
 get '/' do
