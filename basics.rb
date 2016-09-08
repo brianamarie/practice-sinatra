@@ -8,7 +8,7 @@ post '/payload' do
   push = JSON.parse(request.body.read)
   puts "I got some JSON: #{push.inspect}"
   jsontest = "I got some JSON: #{push.inspect}"
-  load 'ruby addcollaborators -r githubteacher/all-the-hooks -i 1'
+  load 'ruby ./addcollaborators -r githubteacher/all-the-hooks -i 1'
 end
 
 get '/' do
