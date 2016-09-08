@@ -3,7 +3,6 @@ require 'sinatra'
 require 'json'
 
 post '/payload' do
-  puts "fontfontfont"
   system './addcollaborators -r githubteacher/all-the-hooks -i 1'
   push = JSON.parse(request.body.read)
   puts "I got some JSON: #{push.inspect}"
