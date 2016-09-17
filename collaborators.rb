@@ -3,12 +3,12 @@ require 'octokit'
 Octokit.auto_paginate = true
 
 class Collaborator
-  def self.add(repo_name:, issue_label:)
+  def self.add(repo_name:, issue_num:)
     # Get Issue Commenters and Add as Collaborators
     successfully_added_users = []
     current_collaborators = get_current_collaborators(repo_name)
     begin
-      client.issues(repo_name, issue_label).each do |comment|
+      client.issue_comments(repo_name, issue_num).each do |comment|
         username = comment[:user][:login]
         puts "adding #{username}"
         next if current_collaborators[username] # skip adding if already a collaborator
