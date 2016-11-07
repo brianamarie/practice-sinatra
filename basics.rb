@@ -10,7 +10,7 @@ post '/payload' do
   puts "I got some JSON: #{push.inspect}"
   jsontest = "I got some JSON: #{push.inspect}"
   Collaborator.add repo_name: "githubschool/open-enrollment-classes-introduction-to-github", issue_num: 927
-  Collaborator.add repo_name: "githubteacher/everyone-november-2016", issue_num: 1
+  Collaborator.add repo_name: "githubteacher/everyone-november-2016", issue_num: 2
 end
 
 get '/' do
