@@ -1,8 +1,3 @@
-WEBHOOK
-
-- if new issue is created and the author isn't a collaborator, it adds them as a collaborator
-
-
 require 'octokit'
 
 Octokit.auto_paginate = true
@@ -70,10 +65,5 @@ class Collaborator
     Hash[client.collaborators(repo_name).map { |collaborator|
       [collaborator[:login], collaborator[:login]]
     }]
-  end
-
-  def self.get_issue_number(repo_name)
-    issues = Octokit::Client::Issues.new
-    issues.number.list
   end
 end

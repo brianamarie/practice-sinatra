@@ -1,0 +1,94 @@
+#!/usr/bin/env ruby
+banner = <<-BANNER
+Usage: add-collaborators [<issue URL> or options]
+BANNER
+
+# add as collaborators anyone who comments on a given issue in a given repo
+# assumes you store the appropriate OAuth token as an ENV variable called GITHUBTEACHER_TOKEN
+
+require 'octokit'
+require 'optparse'
+require_relative 'common'
+
+access_token = ENV['GITHUBTEACHER_TOKEN'] or abort("You need a GitHub Teacher access token")
+repo_name, issue_num = nil, nil
+
+# Make sure arguments are specified
+ARGV << '-h' if ARGV.empty?
+
+ARGV.options do |opts|
+  opts.banner = banner
+  opts.on("-r", "--repo REPOSITORY", String) { |val| repo_name = val }
+  opts.on("-i", "--issue ISSUE", Numeric)    { |val| issue_num = val }
+  opts.on_tail("-h", "--help")               { abort opts.to_s }
+  opts.parse!
+end
+
+if ARGV.any?
+  r, i = parse_issue_url(ARGV.first)
+  repo_name ||= r
+  issue_num ||= i
+end
+
+Octokit.auto_paginate = true
+issues = Octokit.issues 'rails/rails'
+issue_num = issues.map{ |issue| issues::number}
+
+abort ARGV.options.to_s unless [repo_name, issue_num].all?
+
+puts({repo_name: repo_name, issue_num: issue_num}.inspect)
+
+# Create a new Octokit Client
+Octokit.auto_paginate = true
+client = Octokit::Client.new :access_token => access_token
+
+# Save a little time - build a hash of current collaborators so we can skip them later
+current_collaborators = Hash[client.collaborators(repo_name).map { |collaborator|
+  [collaborator[:login], collaborator[:login]]
+}]
+
+# Get Issue Commenters and Add as Collaborators
+successfully_added_users = []
+existing_issues = []
+begin
+  client.issue_comments(repo_name, issue_num).each do |comment|
+    username = comment[:user][:login]
+    next if current_collaborators[username] # skip adding if already a collaborator
+    if user_added = client.add_collaborator(repo_name, username)
+      successfully_added_users << username
+    else
+      puts "Failed to add #{username} as a collaborator (check: is githubteacher repository owner?)"
+    end
+  end
+rescue Octokit::NotFound
+  abort "[404] - Repository not found:\nIf #{repo_name || "nil"} is correct, are you using the right Auth token?"
+rescue Octokit::UnprocessableEntity
+  abort "[422] - Unprocessable Entity:\nAre you trying to add collaborators to an org-level repository?"
+end
+
+if successfully_added_users.any?
+  begin
+    names = "@#{successfully_added_users.first}"
+    verb  = "is"
+    num   = "a"
+    noun  = "collaborator"
+
+    if successfully_added_users.size > 1
+      verb  = "are"
+      num   = ""
+      noun  = "collaborators"
+
+      if successfully_added_users.size == 2
+        names = "@#{successfully_added_users.first} and @#{successfully_added_users.last}"
+      else
+        at_mentions = successfully_added_users.map { |name| "@#{name}" }
+        names = "#{at_mentions[0...-1].join(", ")}, and #{at_mentions[-1]}"
+      end
+    end
+
+    message = ":tada: #{names} #{verb} now #{num} repository #{noun}. :balloon:"
+    client.add_comment repo_name, issue_num, message
+  rescue => e
+    abort "ERR posting comment (#{e.inspect})"
+  end
+end
