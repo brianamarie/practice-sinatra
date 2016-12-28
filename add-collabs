@@ -7,10 +7,13 @@ BANNER
 # assumes you store the appropriate OAuth token as an ENV variable called GITHUBTEACHER_TOKEN
 
 require 'octokit'
+require 'JSON'
 require 'optparse'
 require_relative 'common'
 
-access_token = ENV['GITHUBTEACHER_TOKEN'] or abort("You need a GitHub Teacher access token")
+# curl -u "githubteacher" https://api.github.com/repos/githubteacher/pages-practice/issues
+
+# access_token = ENV['GITHUBTEACHER_TOKEN'] or abort("You need a GitHub Teacher access token")
 repo_name, issue_num = nil, nil
 
 # Make sure arguments are specified
@@ -30,9 +33,6 @@ if ARGV.any?
   issue_num ||= i
 end
 
-Octokit.auto_paginate = true
-issues = Octokit.issues 'rails/rails'
-issue_num = issues.map{ |issue| issues::number}
 
 abort ARGV.options.to_s unless [repo_name, issue_num].all?
 
@@ -40,7 +40,18 @@ puts({repo_name: repo_name, issue_num: issue_num}.inspect)
 
 # Create a new Octokit Client
 Octokit.auto_paginate = true
-client = Octokit::Client.new :access_token => access_token
+# client = Octokit::Client.new :access_token => access_token
+
+# issues = Octokit.issues
+# puts issues
+
+cmd = 'curl -u "githubteacher" https://api.github.com/repos/githubteacher/pages-practice/issues'
+
+# data_hash = JSON.parse(Octokit::user::githubteacher::pages-practice::issues)
+puts("thing")
+
+# issue_num = data_hash['number']
+# issue_num = issues.map{ |issue| issues::number}
 
 # Save a little time - build a hash of current collaborators so we can skip them later
 current_collaborators = Hash[client.collaborators(repo_name).map { |collaborator|
