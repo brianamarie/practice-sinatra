@@ -9,10 +9,9 @@ post '/payload' do
   push = JSON.parse(request.body.read)
   puts "I got some JSON: #{push.inspect}"
 
-  Collaborator.add repo_name: push["repository"]["full_name"].to_s, issue_num: push["issue"]["number"].to_i, user_login: push["issue"]["user"]["login"].to_s
+  Collaborator.addByIssue repo_name: push["repository"]["full_name"].to_s, issue_num: push["issue"]["number"].to_i, user_login: push["issue"]["user"]["login"].to_s
 
-  # Collaborator.add repo_name: "githubschool/on-demand-github-pages", issue_num: 1
-  # @stoe: I don't know what to do with this, do we leave the `githubschool/on-demand-github-pages` as is?
+  Collaborator.add repo_name: "githubschool/on-demand-github-pages", issue_num: 1
 end
 
 get '/' do
